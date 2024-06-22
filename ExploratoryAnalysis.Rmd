@@ -1,0 +1,90 @@
+---
+title: "Model Testing"
+author: "Pablo, Juan, Alejandro"
+date: "2024-06-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r}
+load('Data.RData')
+```
+
+
+
+# GRÁFICOS EXPLORATORIOS
+
+
+```{r}
+datos_agrupados = MoliDelSol %>%
+  group_by(FECHA) %>% summarise(total = sum(NO))
+
+
+```
+
+
+
+```{r}
+library(ggplot2)
+library(plotly)
+# Crear el gráfico temporal
+ p = ggplot(datos_agrupados, aes(x = FECHA, y = total)) +
+  geom_line(color = 'blue') +
+  labs(x = "Date", y = "Value", title = "Gráfico Temporal") +
+  theme_minimal()
+ 
+ 
+ ggplotly(p)
+
+```
+
+
+
+
+
+
+
+```{r}
+
+datos_limpios <- MoliDelSol %>%
+  filter(!is.na(PM2.5)) %>%
+  group_by(HORA) %>%
+  summarise(total = sum(PM2.5))
+
+```
+
+
+
+```{r}
+library(ggplot2)
+library(plotly)
+# Crear el gráfico temporal
+ p = ggplot(datos_limpios, aes(x = HORA, y = total)) +
+  geom_line(color = 'blue') +
+  labs(x = "Date", y = "Value", title = "Gráfico Temporal") +
+  theme_minimal()
+ 
+ 
+ ggplotly(p)
+
+```
+
+
+
+```{r}
+
+
+
+```
+
+
+
+
+
+
