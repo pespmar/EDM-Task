@@ -1,0 +1,161 @@
+---
+title: "DataCleaning"
+author: "Pablo, Juan, Alejandro"
+date: "2024-06-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+```{r}
+
+
+AvenidaFrancia = read.table('DATOS/AvenidaFrancia.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+BulevarSur = read.table('DATOS/BulevarSur.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+Centre= read.table('DATOS/Centre.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+LlicAnticTuria= read.table('DATOS/LlicAnticTuria.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+MoliDelSol= read.table('DATOS/MoliDelSol.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+Olivereta= read.table('DATOS/Olivereta.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+PistaDeSilla= read.table('DATOS/PistaDeSilla.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+Puerto= read.table('DATOS/Puerto.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+
+UPV= read.table('DATOS/UPV.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+
+Viveros= read.table('DATOS/Viveros.txt', header = TRUE, sep = "\t", na.strings = c("", "NA"))
+
+
+
+```
+
+```{r}
+library(lubridate)
+```
+
+
+Fechas
+
+```{r}
+
+
+AvenidaFrancia$FECHA = as.Date(AvenidaFrancia$FECHA, format="%d/%m/%Y")
+BulevarSur$FECHA = as.Date(BulevarSur$FECHA, format="%d/%m/%Y")
+Centre$FECHA = as.Date(Centre$FECHA, format="%d/%m/%Y")
+LlicAnticTuria$FECHA = as.Date(LlicAnticTuria$FECHA, format="%d/%m/%Y")
+MoliDelSol$FECHA = as.Date(MoliDelSol$FECHA, format="%d/%m/%Y")
+Olivereta$FECHA = as.Date(Olivereta$FECHA, format="%d/%m/%Y")
+PistaDeSilla$FECHA = as.Date(PistaDeSilla$FECHA, format="%d/%m/%Y")
+Puerto$FECHA = as.Date(Puerto$FECHA, format="%d/%m/%Y")
+UPV$FECHA = as.Date(UPV$FECHA, format="%d/%m/%Y")
+Viveros$FECHA = as.Date(Viveros$FECHA, format="%d/%m/%Y")
+
+
+
+```
+
+
+
+
+
+
+
+
+```{r}
+plot(MoliDelSol$PM2.5 , MoliDelSol$PM10)
+plot(MoliDelSol$PM2.5 , MoliDelSol$PM1)
+
+
+```
+We can use just 1 of them
+
+
+```{r}
+BulevarSur$PM2.5 = NA
+Viveros$PM2.5 = NA
+
+Centre$SO2 = NA
+Olivereta$SO2 = NA
+
+Centre$O3 = NA
+Olivereta$O3 = NA
+
+BulevarSur$CO = NA
+Centre$CO = NA
+Olivereta$CO = NA
+UPV$CO = NA
+Viveros$CO = NA
+```
+
+
+```{r}
+AvenidaFrancia = AvenidaFrancia[, c(1, 2 , 3 , 6 , 8 , 9 , 11 , 12 , 7)]
+BulevarSur = BulevarSur[, c(1, 2 , 9 , 4 , 5 , 6 , 7 , 8 , 10)]
+Centre = Centre[, c(1, 2 , 3 , 8 , 4 , 5 , 7 , 9 , 10)]
+LlicAnticTuria = LlicAnticTuria[, c(1, 2 , 3 , 11 , 13 , 14 , 16 , 17 , 12)]
+MoliDelSol = MoliDelSol[, c(1, 2 , 3 , 5 , 7 , 8, 10 , 11 , 6)]
+Olivereta = Olivereta[, c(1, 2 , 3 , 8 , 4 , 5 , 7 , 9 , 10)]
+PistaDeSilla = PistaDeSilla[, c(1, 2 , 3 , 7 , 9 , 10 , 12 , 13 , 8)]
+Puerto = Puerto[, c(1, 2 , 3 , 11 , 13 , 14 , 16 , 17 , 12)]
+UPV = UPV[, c(1, 2 , 3 , 4 , 5 , 6 , 8 , 9 , 10)]
+Viveros = Viveros[, c(1, 2 , 8 , 3 , 4 , 5 , 6 , 7 , 9)]
+
+
+```
+
+
+
+
+```{r}
+# Para AvenidaFrancia
+AvenidaFrancia$CO = as.numeric(gsub(",", ".", AvenidaFrancia$CO))
+
+# Para BulevarSur
+BulevarSur$CO = as.numeric(gsub(",", ".", BulevarSur$CO))
+
+# Y así sucesivamente para cada dataframe y cada columna que necesite ser convertida
+Centre$CO = as.numeric(gsub(",", ".", Centre$CO))
+LlicAnticTuria$CO = as.numeric(gsub(",", ".", LlicAnticTuria$CO))
+MoliDelSol$CO = as.numeric(gsub(",", ".", MoliDelSol$CO))
+Olivereta$CO = as.numeric(gsub(",", ".", Olivereta$CO))
+PistaDeSilla$CO = as.numeric(gsub(",", ".", PistaDeSilla$CO))
+Puerto$CO = as.numeric(gsub(",", ".", Puerto$CO))
+UPV$CO = as.numeric(gsub(",", ".", UPV$CO))
+Viveros$CO = as.numeric(gsub(",", ".", Viveros$CO))
+
+```
+
+
+
+
+
+```{r}
+save (AvenidaFrancia, BulevarSur , Centre , LlicAnticTuria , MoliDelSol , Olivereta , PistaDeSilla , Puerto , UPV , Viveros , file = 'Data.RData')
+```
+
+
+
+
+
+

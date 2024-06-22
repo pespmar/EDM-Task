@@ -1,0 +1,151 @@
+---
+title: "Interface"
+author: "Pablo, Juan, Alejandro"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(shiny)
+library(shinydashboard)
+library(leaflet)
+library(DT)
+```
+
+
+
+
+
+
+
+
+```{r}
+ui <- dashboardPage(
+  dashboardHeader(title = "Calidad del Aire en Valencia"),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Análisis Exploratorio", tabName = "exploratorio", icon = icon("chart-bar")),
+      menuItem("Modelo de Ciencia de Datos", tabName = "modelo", icon = icon("robot")),
+      menuItem("Mapa de Contaminación", tabName = "mapa", icon = icon("map"))
+    )
+  ),
+  
+  
+  
+  dashboardBody(
+    tabItems(
+
+      
+      tabItem(tabName = "exploratorio",
+              h2("Análisis Exploratorio"),
+              fileInput("file", "Cargar archivo CSV", accept = c(".csv")),
+              DTOutput("table"),
+              plotOutput("plot")
+      ),
+      
+      tabItem(tabName = "modelo",
+              h2("Modelo de Ciencia de Datos"),
+              fileInput("file_modelo", "Cargar archivo CSV", accept = c(".csv")),
+              selectInput("variable", "Seleccionar variable objetivo", choices = NULL),
+              actionButton("run_model", "Ejecutar Modelo"),
+              verbatimTextOutput("model_summary")
+      ),
+      
+      tabItem(tabName = "mapa",
+              h2("Mapa de Contaminación"),
+              leafletOutput("mapa")
+      )
+    )
+  )
+)
+
+```
+
+
+
+```{r}
+server <- function(input, output, session) {
+
+  
+  data <- reactive({
+    req(input$file)
+    read.csv(input$file$datapath)
+  })
+  
+  output$table <- renderDT({
+    datatable(data())
+  })
+  
+  output$plot <- renderPlot({
+    req(data())
+    hist(data()[[1]], main = "Histograma de la primera variable", xlab = names(data())[1])
+  })
+  
+
+  
+  
+  observe({
+    req(input$file_modelo)
+    data_modelo <- read.csv(input$file_modelo$datapath)
+    updateSelectInput(session, "variable", choices = names(data_modelo))
+  })
+  
+  output$model_summary <- renderPrint({
+    req(input$file_modelo, input$variable, input$run_model)
+    data_modelo <- read.csv(input$file_modelo$datapath)
+    modelo <- lm(as.formula(paste(input$variable, "~ .")), data = data_modelo)
+    summary(modelo)
+  })
+
+  
+  
+  
+  
+  
+  output$mapa <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%
+      setView(lng = -0.37739, lat = 39.46975, zoom = 13) %>%
+      addCircleMarkers(
+        lng = c(-0.35583, -0.39856, -0.37682, -0.42937, -0.34199, -0.38134, -0.34327, -0.36866, -0.39807, -0.33257, -0.31971, -0.37585),
+        lat = c(39.46295, 39.45214, 39.46975, 39.48737, 39.45545, 39.43059, 39.48122, 39.47087, 39.47847, 39.44478, 39.43033, 39.47022),
+        label = c(
+          "Av. França",
+          "Bulevard Sud",
+          "Centre",
+          "Molí del Sol",
+          "Nazaret Met-2",
+          "Pista de Silla",
+          "Politècnic",
+          "Vivers",
+          "Olivereta",
+          "Port llit antic Túria",
+          "Port Moll Trans. Ponent",
+          "Conselleria Meteo."
+        ),
+        color = "red",
+        radius = 10
+      )
+  })
+}
+
+
+```
+
+
+
+```{r}
+shinyApp(ui = ui, server = server)
+```
+
+
+
+
+
+
+
+
+
+
+
