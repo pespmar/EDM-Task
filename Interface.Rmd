@@ -15,6 +15,9 @@ library(DT)
 
 
 
+```{r}
+load('Data.RData')
+```
 
 
 
@@ -108,21 +111,34 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(lng = -0.37739, lat = 39.46975, zoom = 13) %>%
       addCircleMarkers(
-        lng = c(-0.35583, -0.39856, -0.37682, -0.42937, -0.34199, -0.38134, -0.34327, -0.36866, -0.39807, -0.33257, -0.31971, -0.37585),
-        lat = c(39.46295, 39.45214, 39.46975, 39.48737, 39.45545, 39.43059, 39.48122, 39.47087, 39.47847, 39.44478, 39.43033, 39.47022),
+        lng = c(-0.3426899,
+                -0.39631399,
+                -0.37648469,
+                -0.40855865,
+                -0.37665323,
+                -0.3374074,
+                -0.36955032,
+                -0.40603766,
+                -0.32321741),
+        lat = c(39.45750439,
+                39.45037852,
+                39.47071883,
+                39.48113875,
+                39.45806013,
+                39.47962193,
+                39.47948825,
+                39.46923859,
+                39.45926486),
         label = c(
-          "Av. França",
-          "Bulevard Sud",
+          "AvenidaFrancia",
+          "BulevarSur",
           "Centre",
-          "Molí del Sol",
-          "Nazaret Met-2",
-          "Pista de Silla",
-          "Politècnic",
-          "Vivers",
+          "MolidelSol",
+          "PistadeSilla",
+          "UPV",
+          "Viveros",
           "Olivereta",
-          "Port llit antic Túria",
-          "Port Moll Trans. Ponent",
-          "Conselleria Meteo."
+          "Puerto",
         ),
         color = "red",
         radius = 10
