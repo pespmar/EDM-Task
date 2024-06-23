@@ -12,41 +12,53 @@ library(shinydashboard)
 library(leaflet)
 library(DT)
 library(plotly)
+library(dplyr)
 ```
 
 
 
 ```{r}
 load('Data.RData')
+```
+
+
+
+# Pre-Rendered Graphs
+
+Can be seen with more detail in our GitHub - ExploratoryAnalysis
+
+
+```{r}
 load('PreRenderedGraphs.RData')
 ```
 
 
+
+## Options from selection parts
 ```{r}
 opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
-             , "Puerto", "COMPLETE")
-
+             , "Puerto", "AllStations")
 
 variables = c("PM2.5" , "SO2" , "NO" , "NO2" , "NOx" , "O3" , "CO")
 
 
-missingdatamethods = c('None' , 'Interpolation' , 'Mean')
+missingdatamethods = c('None' , 'Mean' , 'Interpolation')
 
 ```
 
+
+## Slice of All Stations
 
 ```{r}
-library(dplyr)
+
 set.seed(123)
 
-COMPLETESLICE = na.omit(COMPLETE) %>% sample_n(size = 1000)
+COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
 ```
 
 
-
-
-
+# UI
 
 ```{r}
 ui <- dashboardPage(
@@ -65,23 +77,31 @@ ui <- dashboardPage(
 
       tabItem(tabName = "exploratory",
               h1("Data Exploratory Analysis"),
-              selectInput("select", "Select one Station:", choices = opciones),
-              uiOutput("plot"),
+              hr(),
+              p('In this section you can see different distributions of our data
+              and play with them'),
               h3('Scatter Plots'),
               selectInput("variable1", "Select the first variable:",
               choices = variables),
               selectInput("variable2", "Select the second variable:",
               choices = variables),
               plotlyOutput("scatterPlot"),
+              hr(),
+              h1('Analysis per Station'),
+              hr(),
+              selectInput("select", "Select one Station:", choices = opciones),
+              h3('Hour analysis'),
+              uiOutput("plot"),
               h3('Dealing with missing Data'),
-              selectInput("selectNA", "Select one Station to check missing data:",                    choices =  opciones),
+              p('We have some missing data from every station. To deal with it, we
+                prerent some different approaches'),
+              tags$ul(
+                tags$li("Filling data with the total mean from the station"),
+                tags$li("Filling data Interpolating from last and next day"),
+              ),
               selectInput("missingdata", "Select the missing data method:",
               choices = missingdatamethods),
               plotlyOutput("temporalPlotNA"),
-              
-              
-              
-              
               
       ),
       
@@ -102,11 +122,7 @@ ui <- dashboardPage(
 
 
 
-
-```{r}
-
-```
-
+# Server
 
 
 ```{r}
@@ -166,12 +182,12 @@ server <- function(input, output, session) {
 
 
 req(input$missingdata) 
-req(input$selectNA)    
+req(input$select)    
     
 plot_selected <- switch(input$missingdata,
-                        'None' = graficosPMporDia[[input$selectNA]],
-                        'Interpolation' =graficosPMporDiaInterpolacion[[input$selectNA]],
-                        'Mean' = graficosPMporDiaMedia[[input$selectNA]])
+                        'None' = graficosPMporDia[[input$select]],
+                        'Interpolation' =graficosPMporDiaInterpolacion[[input$select]],
+                        'Mean' = graficosPMporDiaMedia[[input$select]])
 
 plot_selected
 
@@ -231,18 +247,11 @@ plot_selected
 ```
 
 
+# Run
+
 
 ```{r}
 shinyApp(ui = ui, server = server)
 ```
-
-
-
-
-
-
-
-
-
 
 

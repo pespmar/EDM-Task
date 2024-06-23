@@ -69,8 +69,8 @@ data_imputados$Media = media_total
   
   
 plot <- plot_ly(data = datos_agrupados, x = ~FECHA, y = ~total, name = 'Original Values') %>% add_lines() %>%
-  layout(title = "Temporal Graph",
-         xaxis = list(title = "Date"), yaxis = list(title = "PM2.5"))
+  layout(showlegend = TRUE, title = "Temporal Graph",
+         xaxis = list(title = "Date"), yaxis = list(title = "PM2.5")) 
 
 
 graficosPMporDia[[opcion]] = plot
@@ -134,7 +134,7 @@ for (opcion in opciones){
 plot <- plot_ly(datos_limpios, x = ~HORA, y = ~total, type = 'scatter', mode = 'lines', line = list(color = 'blue')) %>%
   layout(title = 'Temporal Graph grouped by hour of the day',
          xaxis = list(title = 'Hour' , range = c(0,24)),
-         yaxis = list(title = 'PM2.5' , range = c(0, 20)),
+         yaxis = list(title = 'PM2.5' , range = c(0, 15)),
          showlegend = FALSE)
   
   graficosPMporHora[[opcion]] =plot
