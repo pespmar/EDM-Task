@@ -20,6 +20,12 @@ load('Data.RData')
 ```
 
 
+```{r}
+opciones = c("AvenidaFrancia", "BulevarSur", "Centre", "MolidelSol",
+             "PistadeSilla", "UPV", "Viveros", "Olivereta"
+             , "Puerto", "TODOS")
+
+```
 
 
 
@@ -39,11 +45,9 @@ ui <- dashboardPage(
   dashboardBody(
     tabItems(
 
-      
       tabItem(tabName = "exploratorio",
               h2("Análisis Exploratorio"),
-              fileInput("file", "Cargar archivo CSV", accept = c(".csv")),
-              DTOutput("table"),
+              selectInput("select", "Selecciona:", choices = opciones),
               plotOutput("plot")
       ),
       
@@ -64,6 +68,13 @@ ui <- dashboardPage(
 )
 
 ```
+
+
+```{r}
+
+```
+
+
 
 
 
@@ -112,36 +123,32 @@ server <- function(input, output, session) {
       setView(lng = -0.37739, lat = 39.46975, zoom = 13) %>%
       addCircleMarkers(
         lng = c(-0.3426899,
-                -0.39631399,
                 -0.37648469,
                 -0.40855865,
                 -0.37665323,
                 -0.3374074,
-                -0.36955032,
                 -0.40603766,
-                -0.32321741),
+                -0.32321741,
+                -0.32894501),
         lat = c(39.45750439,
-                39.45037852,
                 39.47071883,
                 39.48113875,
                 39.45806013,
                 39.47962193,
-                39.47948825,
                 39.46923859,
-                39.45926486),
+                39.45926486,
+                39.45051894),
         label = c(
           "AvenidaFrancia",
-          "BulevarSur",
           "Centre",
           "MolidelSol",
           "PistadeSilla",
           "UPV",
-          "Viveros",
           "Olivereta",
           "Puerto",
+          "LlicAnticTuria"
         ),
         color = "red",
-        radius = 10
       )
   })
 }
