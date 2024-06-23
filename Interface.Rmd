@@ -17,12 +17,13 @@ library(DT)
 
 ```{r}
 load('Data.RData')
+load('PreRenderedGraphs.RData')
 ```
 
 
 ```{r}
-opciones = c("AvenidaFrancia", "Centre", "MolidelSol",
-             "PistadeSilla", "UPV", "Olivereta"
+opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
+             "PistaDeSilla", "UPV", "Olivereta"
              , "Puerto", "TODOS")
 
 ```
@@ -39,7 +40,6 @@ ui <- dashboardPage(
       menuItem("Mapa de Contaminación", tabName = "mapa", icon = icon("map"))
     )
   ),
-  
   
   
   dashboardBody(
@@ -92,8 +92,7 @@ server <- function(input, output, session) {
   })
   
   output$plot <- renderPlot({
-    req(data())
-    hist(data()[[1]], main = "Histograma de la primera variable", xlab = names(data())[1])
+    graficos[[]]
   })
   
 

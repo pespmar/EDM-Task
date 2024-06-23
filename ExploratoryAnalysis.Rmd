@@ -52,39 +52,13 @@ library(plotly)
 
 
 ```{r}
-
-datos_limpios <- MoliDelSol %>%
-  filter(!is.na(PM2.5)) %>%
-  group_by(HORA) %>%
-  summarise(total = sum(PM2.5))
-
-```
-
-
-
-```{r}
-library(ggplot2)
-library(plotly)
-# Crear el gráfico temporal
- p = ggplot(datos_limpios, aes(x = HORA, y = total)) +
-  geom_line(color = 'blue') +
-  labs(x = "Date", y = "Value", title = "Gráfico Temporal") +
-  theme_minimal()
- 
- 
- ggplotly(p)
-
-```
-
-
-```{r}
-opciones = c("AvenidaFrancia", "Centre", "MolidelSol",
-             "PistadeSilla", "UPV", "Olivereta"
+opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
+             "PistaDeSilla", "UPV", "Olivereta"
              , "Puerto")
 ```
 
 ```{r}
-graficos <- list()
+graficosPMporHora <- list()
 
 
 ```
@@ -102,16 +76,16 @@ for (opcion in opciones){
   datos_limpios <- c %>%
   filter(!is.na(PM2.5)) %>%
   group_by(HORA) %>%
-  summarise(total = sum(PM2.5))
+  summarise(total = mean(PM2.5))
   
   
-  p = ggplot(datos_limpios, aes(x = HORA, y = total)) +
-  geom_line(color = 'blue') +
-  labs(x = "Date", y = "Value", title = "Gráfico Temporal") +
-  theme_minimal()
+plot <- plot_ly(datos_limpios, x = ~HORA, y = ~total, type = 'scatter', mode = 'lines', line = list(color = 'blue')) %>%
+  layout(title = 'Temporal Graph grouped by hour of the day',
+         xaxis = list(title = 'Date'),
+         yaxis = list(title = 'PM2.5' , range = c(0, 20)),
+         showlegend = FALSE)
   
-  graficos[[opcion]] = ggplotly(p)
-  
+  graficosPMporHora[[opcion]] =plot
   
   
 }
@@ -120,6 +94,16 @@ for (opcion in opciones){
 ```
 
 
+
+```{r}
+graficosPMporHora$AvenidaFrancia
+```
+
+
+
+```{r}
+save (graficosPMporHora, file = 'PreRenderedGraphs.RData')
+```
 
 
 
