@@ -21,8 +21,8 @@ load('Data.RData')
 
 
 ```{r}
-opciones = c("AvenidaFrancia", "BulevarSur", "Centre", "MolidelSol",
-             "PistadeSilla", "UPV", "Viveros", "Olivereta"
+opciones = c("AvenidaFrancia", "Centre", "MolidelSol",
+             "PistadeSilla", "UPV", "Olivereta"
              , "Puerto", "TODOS")
 
 ```

@@ -50,6 +50,7 @@ library(plotly)
 
 
 
+
 ```{r}
 
 datos_limpios <- MoliDelSol %>%
@@ -76,9 +77,44 @@ library(plotly)
 ```
 
 
+```{r}
+opciones = c("AvenidaFrancia", "Centre", "MolidelSol",
+             "PistadeSilla", "UPV", "Olivereta"
+             , "Puerto")
+```
 
 ```{r}
+graficos <- list()
 
+
+```
+
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(dplyr)
+
+for (opcion in opciones){
+  
+  c = get(opcion)
+          
+  datos_limpios <- c %>%
+  filter(!is.na(PM2.5)) %>%
+  group_by(HORA) %>%
+  summarise(total = sum(PM2.5))
+  
+  
+  p = ggplot(datos_limpios, aes(x = HORA, y = total)) +
+  geom_line(color = 'blue') +
+  labs(x = "Date", y = "Value", title = "Gráfico Temporal") +
+  theme_minimal()
+  
+  graficos[[opcion]] = ggplotly(p)
+  
+  
+  
+}
 
 
 ```
