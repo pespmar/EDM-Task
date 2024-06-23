@@ -24,7 +24,7 @@ load('PreRenderedGraphs.RData')
 ```{r}
 opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
-             , "Puerto", "TODOS")
+             , "Puerto", "COMPLETE")
 
 ```
 
@@ -48,14 +48,11 @@ ui <- dashboardPage(
       tabItem(tabName = "exploratorio",
               h2("Análisis Exploratorio"),
               selectInput("select", "Selecciona:", choices = opciones),
-              plotOutput("plot")
+              uiOutput("plot")
       ),
       
       tabItem(tabName = "modelo",
               h2("Modelo de Ciencia de Datos"),
-              fileInput("file_modelo", "Cargar archivo CSV", accept = c(".csv")),
-              selectInput("variable", "Seleccionar variable objetivo", choices = NULL),
-              actionButton("run_model", "Ejecutar Modelo"),
               verbatimTextOutput("model_summary")
       ),
       
@@ -70,9 +67,6 @@ ui <- dashboardPage(
 ```
 
 
-```{r}
-
-```
 
 
 
@@ -91,18 +85,17 @@ server <- function(input, output, session) {
     datatable(data())
   })
   
-  output$plot <- renderPlot({
-    graficos[[]]
+  output$plot <- renderUI({
+    req(input$select)
+    plotlyOutput("selected_plot")
+  })
+  
+  output$selected_plot <- renderPlotly({
+    req(input$select)
+    graficosPMporHora[[input$select]]
   })
   
 
-  
-  
-  observe({
-    req(input$file_modelo)
-    data_modelo <- read.csv(input$file_modelo$datapath)
-    updateSelectInput(session, "variable", choices = names(data_modelo))
-  })
   
   output$model_summary <- renderPrint({
     req(input$file_modelo, input$variable, input$run_model)
