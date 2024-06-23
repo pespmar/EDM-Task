@@ -34,7 +34,7 @@ variables = c("PM2.5" , "SO2" , "NO" , "NO2" , "NOx" , "O3" , "CO")
 
 
 ```{r}
-COMPLETESLICE = COMPLETE %>% slice(1:1000)
+COMPLETESLICE = na.omit(COMPLETE) %>% slice(1:1000)
 ```
 
 
