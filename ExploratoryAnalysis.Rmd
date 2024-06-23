@@ -7,46 +7,17 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
 
+library(ggplot2)
+library(plotly)
+library(dplyr)
+```
 
 
 
 ```{r}
 load('Data.RData')
 ```
-
-
-
-# GRÁFICOS EXPLORATORIOS
-
-
-```{r}
-datos_agrupados = MoliDelSol %>%
-  group_by(FECHA) %>% summarise(total = sum(NO))
-
-
-```
-
-
-
-```{r}
-library(ggplot2)
-library(plotly)
-# Crear el gráfico temporal
- p = ggplot(datos_agrupados, aes(x = FECHA, y = total)) +
-  geom_line(color = 'blue') +
-  labs(x = "Date", y = "Value", title = "Gráfico Temporal") +
-  theme_minimal()
- 
- 
- ggplotly(p)
-
-```
-
-
-
-
 
 
 
@@ -57,16 +28,100 @@ opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              , "Puerto" , "COMPLETE")
 ```
 
+
+
+
+# GRÁFICOS EXPLORATORIOS
+
 ```{r}
-graficosPMporHora <- list()
+graficosPMporDia = list()
+graficosPMporDiaInterpolacion = list()
+graficosPMporDiaMedia = list()
+```
+
+
+
+
+
+```{r}
+
+for (opcion in opciones) {
+
+
+  c = get(opcion)
+  
+  datos_agrupados = c %>%
+    group_by(FECHA) %>%
+    summarise(total = mean(PM2.5))
+
+  
+  datos_agrupados$Interpolation <- na.approx(datos_agrupados$total, na.rm = FALSE)
+  
+  
+  data_imputados = datos_agrupados[is.na(datos_agrupados$total), ]
+  
+  media_total <- mean(datos_agrupados$total, na.rm = TRUE)
+  
+  
+data_imputados$Media = media_total
+  
+  
+  
+  
+  
+  
+plot <- plot_ly(data = datos_agrupados, x = ~FECHA, y = ~total, name = 'Original Values') %>% add_lines() %>%
+  layout(title = "Temporal Graph",
+         xaxis = list(title = "Date"), yaxis = list(title = "PM2.5"))
+
+
+graficosPMporDia[[opcion]] = plot
+  
+  
+if (nrow(data_imputados) > 0 ){
+plot2 <- plot %>% add_trace(data = data_imputados, x = ~FECHA, y = ~Interpolation, 
+                           type = 'scatter', mode = 'markers',
+                           marker = list(color = 'red', size = 5),
+                           name = 'Interpolation')
+
+
+
+plot3 = plot %>% add_trace(data = data_imputados, x = ~FECHA, y = ~Media, 
+                           type = 'scatter', mode = 'markers',
+                           marker = list(color = 'green', size = 5),
+                           name = 'Mean')
+
+}
+
+
+graficosPMporDiaInterpolacion[[opcion]] = plot2
+
+
+graficosPMporDiaMedia[[opcion]] = plot3
+  
+
+}
+
+
 
 
 ```
 
 
+```{r}
+graficosPMporDia$Puerto
+```
+
+
+
+
 
 # Gráficos de partículas por horas
 
+```{r}
+graficosPMporHora <- list()
+
+```
 
 ```{r}
 library(ggplot2)
@@ -118,7 +173,7 @@ plot_ly(COMPLETES , x = ~CO, y = ~NO , type = 'scatter', mode = 'markers')
 
 
 ```{r}
-save (graficosPMporHora, file = 'PreRenderedGraphs.RData')
+save (graficosPMporHora, graficosPMporDia,graficosPMporDiaMedia , graficosPMporDiaInterpolacion, file = 'PreRenderedGraphs.RData')
 ```
 
 

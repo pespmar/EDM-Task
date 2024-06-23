@@ -30,11 +30,17 @@ opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
 
 variables = c("PM2.5" , "SO2" , "NO" , "NO2" , "NOx" , "O3" , "CO")
 
+
+missingdatamethods = c('None' , 'Interpolation' , 'Mean')
+
 ```
 
 
 ```{r}
-COMPLETESLICE = na.omit(COMPLETE) %>% slice(1:1000)
+library(dplyr)
+set.seed(123)
+
+COMPLETESLICE = na.omit(COMPLETE) %>% sample_n(size = 1000)
 ```
 
 
@@ -66,7 +72,16 @@ ui <- dashboardPage(
               choices = variables),
               selectInput("variable2", "Select the second variable:",
               choices = variables),
-              plotlyOutput("scatterPlot")
+              plotlyOutput("scatterPlot"),
+              h3('Dealing with missing Data'),
+              selectInput("selectNA", "Select one Station to check missing data:",                    choices =  opciones),
+              selectInput("missingdata", "Select the missing data method:",
+              choices = missingdatamethods),
+              plotlyOutput("temporalPlotNA"),
+              
+              
+              
+              
               
       ),
       
@@ -88,6 +103,9 @@ ui <- dashboardPage(
 
 
 
+```{r}
+
+```
 
 
 
@@ -122,7 +140,7 @@ server <- function(input, output, session) {
   output$scatterPlot <- renderPlotly({
     req(input$variable1)
     req(input$variable2)
-    
+  
     a = COMPLETESLICE[,input$variable1]
     b = COMPLETESLICE[,input$variable2]
     
@@ -131,10 +149,33 @@ server <- function(input, output, session) {
       x = a,
       y = b,
       type = 'scatter',
-      mode = 'markers')
+      mode = 'markers',
+      text = ~paste('Date:', FECHA),
+      hoverinfo = 'text')%>%
+      layout(title = 'Scatter Plot with 1000 points',
+         xaxis = list(title = input$variable1),
+         yaxis = list(title = input$variable2))
     
     })
     
+  
+  
+  
+  
+  output$temporalPlotNA <- renderPlotly({
+
+
+req(input$missingdata) 
+req(input$selectNA)    
+    
+plot_selected <- switch(input$missingdata,
+                        'None' = graficosPMporDia[[input$selectNA]],
+                        'Interpolation' =graficosPMporDiaInterpolacion[[input$selectNA]],
+                        'Mean' = graficosPMporDiaMedia[[input$selectNA]])
+
+plot_selected
+
+  })
     
 
   
