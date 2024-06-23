@@ -106,8 +106,23 @@ graficosPMporHora$COMPLETE
 
 
 ```{r}
+COMPLETES = COMPLETE %>% slice(1:1000)
+plot_ly(COMPLETES , x = ~CO, y = ~NO , type = 'scatter', mode = 'markers')
+```
+
+
+
+
+
+
+
+
+```{r}
 save (graficosPMporHora, file = 'PreRenderedGraphs.RData')
 ```
+
+
+
 
 
 

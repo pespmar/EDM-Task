@@ -27,7 +27,18 @@ opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
              , "Puerto", "COMPLETE")
 
+
+variables = c("PM2.5" , "SO2" , "NO" , "NO2" , "NOx" , "O3" , "CO")
+
 ```
+
+
+```{r}
+COMPLETESLICE = COMPLETE %>% slice(1:1000)
+```
+
+
+
 
 
 
@@ -47,18 +58,25 @@ ui <- dashboardPage(
     tabItems(
 
       tabItem(tabName = "exploratory",
-              h2("Data Exploratory Analysis"),
+              h1("Data Exploratory Analysis"),
               selectInput("select", "Select one Station:", choices = opciones),
-              uiOutput("plot")
+              uiOutput("plot"),
+              h3('Scatter Plots'),
+              selectInput("variable1", "Select the first variable:",
+              choices = variables),
+              selectInput("variable2", "Select the second variable:",
+              choices = variables),
+              plotlyOutput("scatterPlot")
+              
       ),
       
       tabItem(tabName = "model",
-              h2("Data Science Model"),
+              h1("Data Science Model"),
               verbatimTextOutput("model_summary")
       ),
       
       tabItem(tabName = "map",
-              h2("Pollution Map"),
+              h1("Pollution Map"),
               leafletOutput("mapa")
       )
     )
@@ -92,12 +110,32 @@ server <- function(input, output, session) {
   })
   
   
-  
   output$selected_plot <- renderPlotly({
     req(input$select)
     graficosPMporHora[[input$select]]
   })
   
+  
+
+  
+  
+  output$scatterPlot <- renderPlotly({
+    req(input$variable1)
+    req(input$variable2)
+    
+    a = COMPLETESLICE[,input$variable1]
+    b = COMPLETESLICE[,input$variable2]
+    
+    plot_ly(
+      data = COMPLETESLICE,
+      x = a,
+      y = b,
+      type = 'scatter',
+      mode = 'markers')
+    
+    })
+    
+    
 
   
   output$model_summary <- renderPrint({
