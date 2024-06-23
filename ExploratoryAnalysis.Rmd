@@ -25,7 +25,7 @@ load('Data.RData')
 ```{r}
 opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
-             , "Puerto" , "COMPLETE")
+             , "Puerto" , "AllStations")
 ```
 
 
@@ -38,8 +38,6 @@ graficosPMporDia = list()
 graficosPMporDiaInterpolacion = list()
 graficosPMporDiaMedia = list()
 ```
-
-
 
 
 
@@ -108,11 +106,6 @@ graficosPMporDiaMedia[[opcion]] = plot3
 ```
 
 
-```{r}
-graficosPMporDia$Puerto
-```
-
-
 
 
 
@@ -155,19 +148,15 @@ plot <- plot_ly(datos_limpios, x = ~HORA, y = ~total, type = 'scatter', mode = '
 
 
 ```{r}
-graficosPMporHora$COMPLETE
+graficosPMporHora$AllStations
 ```
 
 
 
 ```{r}
-COMPLETES = COMPLETE %>% slice(1:1000)
+COMPLETES = AllStations %>% slice(1:1000)
 plot_ly(COMPLETES , x = ~CO, y = ~NO , type = 'scatter', mode = 'markers')
 ```
-
-
-
-
 
 
 

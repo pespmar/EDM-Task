@@ -145,20 +145,15 @@ UPV <- UPV %>% mutate(source = "UPV")
 ```
 
 ```{r}
-COMPLETE = rbind(AvenidaFrancia , Centre , LlicAnticTuria , MoliDelSol , Olivereta , PistaDeSilla , Puerto , UPV)
+AllStations = rbind(AvenidaFrancia , Centre , LlicAnticTuria , MoliDelSol , Olivereta , PistaDeSilla , Puerto , UPV)
 ```
 
 
 
 ```{r}
-save (AvenidaFrancia , Centre , LlicAnticTuria , MoliDelSol , Olivereta , PistaDeSilla , Puerto , UPV , COMPLETE, file = 'Data.RData')
+save (AvenidaFrancia , Centre , LlicAnticTuria , MoliDelSol , Olivereta , PistaDeSilla , Puerto , UPV , AllStations, file = 'Data.RData')
 ```
 
-
-
-```{r}
-
-```
 
 
 
