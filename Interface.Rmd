@@ -11,6 +11,7 @@ library(shiny)
 library(shinydashboard)
 library(leaflet)
 library(DT)
+library(plotly)
 ```
 
 
@@ -32,12 +33,12 @@ opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
 
 ```{r}
 ui <- dashboardPage(
-  dashboardHeader(title = "Calidad del Aire en Valencia"),
+  dashboardHeader(title = "Air Contamination"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Análisis Exploratorio", tabName = "exploratorio", icon = icon("chart-bar")),
-      menuItem("Modelo de Ciencia de Datos", tabName = "modelo", icon = icon("robot")),
-      menuItem("Mapa de Contaminación", tabName = "mapa", icon = icon("map"))
+      menuItem("Data Exploratory Analysis", tabName = "exploratory", icon = icon("chart-bar")),
+      menuItem("Data Science Model", tabName = "model", icon = icon("robot")),
+      menuItem("Pollution Map", tabName = "map", icon = icon("map"))
     )
   ),
   
@@ -45,19 +46,19 @@ ui <- dashboardPage(
   dashboardBody(
     tabItems(
 
-      tabItem(tabName = "exploratorio",
-              h2("Análisis Exploratorio"),
-              selectInput("select", "Selecciona:", choices = opciones),
+      tabItem(tabName = "exploratory",
+              h2("Data Exploratory Analysis"),
+              selectInput("select", "Select one Station:", choices = opciones),
               uiOutput("plot")
       ),
       
-      tabItem(tabName = "modelo",
-              h2("Modelo de Ciencia de Datos"),
+      tabItem(tabName = "model",
+              h2("Data Science Model"),
               verbatimTextOutput("model_summary")
       ),
       
-      tabItem(tabName = "mapa",
-              h2("Mapa de Contaminación"),
+      tabItem(tabName = "map",
+              h2("Pollution Map"),
               leafletOutput("mapa")
       )
     )
@@ -89,6 +90,8 @@ server <- function(input, output, session) {
     req(input$select)
     plotlyOutput("selected_plot")
   })
+  
+  
   
   output$selected_plot <- renderPlotly({
     req(input$select)
