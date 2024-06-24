@@ -45,6 +45,9 @@ variables = c("PM2.5" , "SO2" , "NO" , "NO2" , "NOx" , "O3" , "CO")
 
 missingdatamethods = c('None' , 'Mean' , 'Interpolation')
 
+
+variablesMapa = c("PM2.5" , "NO")
+
 ```
 
 
@@ -60,6 +63,16 @@ COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
 
 
 ```{r}
+dataMapa = AllStations %>% group_by(HORA, source)%>%
+  summarise(totalPM = mean(PM2.5, na.rm = TRUE) , totalNO = mean(NO, na.rm = TRUE))
+
+
+dataMapa$lng =  rep(c(-0.3426899, -0.37648469, -0.32894501 , -0.40855865,  -0.40603766,-0.37665323 , -0.32321741 , -0.3374074), 24)
+
+dataMapa$lat = rep(c(39.45750439, 39.47071883, 39.45051894, 39.48113875,  39.46923859, 39.45806013,  39.45926486 , 39.47962193 ), 24)
+
+dataMapa$label = rep(c("AvenidaFrancia", "Centre","LlicAnticTuria",  "MolidelSol", "Olivereta", "PistadeSilla" , "Puerto" , "UPV"), 24)
+
 
 ```
 
@@ -68,7 +81,7 @@ COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
 
 ```{r}
 ui <- dashboardPage(
-  dashboardHeader(title = "Air Contamination"),
+  dashboardHeader(title = "Air Pollution"),
   dashboardSidebar(
     sidebarMenu(
       menuItem("Data Exploratory Analysis", tabName = "exploratory", icon = icon("chart-bar")),
@@ -82,39 +95,42 @@ ui <- dashboardPage(
     tabItems(
 
       tabItem(tabName = "exploratory",
-              h1("Data Exploratory Analysis"),
-              p('In this section you can see different distributions of our data
-              and play with them'),
-              h3('Scatter Plots'),
-              selectInput("variable1", "Select the first variable:",
-              choices = variables),
-              selectInput("variable2", "Select the second variable:",
-              choices = variables),
-              plotlyOutput("scatterPlot"),
-                p('Some variables, as they are similar chemical compounds, are high
-                  correlated with each other'),
-              hr(),
-              hr(),
-              h1('Analysis per Station'),
-              selectInput("select", "Select one Station:", choices = opciones),
-              h3('Hour analysis'),
-              uiOutput("plot"),
-              p('In general terms, there is an increase in air particles at 8 and 9 oclock, and at 20 and 21 oclock. This may be due to increased transportation coinciding with work hours.'),
-              h3('Dealing with missing Data'),
-              p('We have some missing data from every station. To deal with it, we
-                prerent some different approaches'),
-              tags$ul(
-                tags$li("Filling data with the total mean from the station"),
-                tags$li("Filling data Interpolating from last and next day"),
-              ),
-              selectInput("missingdata", "Select the missing data method:",
-              choices = missingdatamethods),
-              plotlyOutput("temporalPlotNA"),
-              p('Using the data as a temporal data, interpolation technique seems to
-              have better results')
-              
-      ),
+h1("Data Exploratory Analysis"),
+p('In this section you can see different distributions of our data
+and play with them'),
+
+h3('Scatter Plots'),
+selectInput("variable1", "Select the first variable:",
+choices = variables),
+selectInput("variable2", "Select the second variable:",
+choices = variables),
+plotlyOutput("scatterPlot"),
+p('Some variables, as they are similar chemical compounds, are high
+correlated with each other'),
+
+hr(),
+hr(),
+
+h1('Analysis per Station'),
+selectInput("select", "Select one Station:", choices = opciones),
+h3('Hour analysis'),
+uiOutput("plot"),
+p('In general terms, there is an increase in air particles at 8 and 9 oclock, and at 20 and 21 oclock. This may be due to increased transportation coinciding with work hours.'),
+
+h3('Dealing with missing Data'),
+p('We have some missing data from every station. To deal with it, we
+prerent some different approaches'),
+tags$ul(
+  tags$li("Filling data with the total mean from the station"),
+  tags$li("Filling data Interpolating from last and next day"),
+),
+selectInput("missingdata", "Select the missing data method:",
+choices = missingdatamethods),
+plotlyOutput("temporalPlotNA"),
+p('Using the data as a temporal data, interpolation technique seems to
+have better results')),
       
+
       tabItem(tabName = "model",
               h1("Data Science Model"),
               verbatimTextOutput("model_summary")
@@ -123,8 +139,13 @@ ui <- dashboardPage(
       
   tabItem(tabName = "map",
           h1("Pollution Map"),
+          selectInput("mapSelect", "Select the metric to consider:",
+          choices = variablesMapa),
           leafletOutput("mapa"),
-          sliderInput("hora", "Selecciona la hora del día", min = 0, max = 23, value = 0, animate = animationOptions(interval = 1000))
+          sliderInput("hora", "Select the hour of the day", min = 0, max = 23, value = 0, animate = animationOptions(interval = 1000)),
+          p('It is surprising to see the outliers presented in NO at Olivereta Station between 6 and 9 am')
+          
+
   )
   
   
@@ -141,17 +162,9 @@ ui <- dashboardPage(
 
 ```{r}
 server <- function(input, output, session) {
-
   
-  data <- reactive({
-    req(input$file)
-    read.csv(input$file$datapath)
-  })
   
-  output$table <- renderDT({
-    datatable(data())
-  })
-  
+  # Graph per Hour
   output$plot <- renderUI({
     req(input$select)
     plotlyOutput("selected_plot")
@@ -164,8 +177,7 @@ server <- function(input, output, session) {
   })
   
   
-
-  
+  # Scatter Plot
   
   output$scatterPlot <- renderPlotly({
     req(input$variable1)
@@ -189,8 +201,7 @@ server <- function(input, output, session) {
     })
     
   
-  
-  
+  # Temporal Graph
   
   output$temporalPlotNA <- renderPlotly({
 
@@ -206,9 +217,12 @@ plot_selected <- switch(input$missingdata,
 plot_selected
 
   })
-    
-
   
+  
+  
+  
+  
+  # Model
   output$model_summary <- renderPrint({
     req(input$file_modelo, input$variable, input$run_model)
     data_modelo <- read.csv(input$file_modelo$datapath)
@@ -217,46 +231,61 @@ plot_selected
   })
 
   
+
   
-  output$mapa <- renderLeaflet({
-    leaflet() %>%
-      addTiles() %>%
-      setView(lng = -0.37739, lat = 39.46975, zoom = 13) %>%
-      addCircleMarkers(
-        lng = c(-0.3426899,
-                -0.37648469,
-                -0.40855865,
-                -0.37665323,
-                -0.3374074,
-                -0.40603766,
-                -0.32321741,
-                -0.32894501),
-        lat = c(39.45750439,
-                39.47071883,
-                39.48113875,
-                39.45806013,
-                39.47962193,
-                39.46923859,
-                39.45926486,
-                39.45051894),
-        label = c(
-          "AvenidaFrancia",
-          "Centre",
-          "MolidelSol",
-          "PistadeSilla",
-          "UPV",
-          "Olivereta",
-          "Puerto",
-          "LlicAnticTuria"
-        ),
-        color = "red",
-      )
+  
+  # Map
+  
+  
+  data_filtered <- reactive({
+    dataMapa %>% filter(HORA == input$hora)
   })
   
   
-  
-  
-  
+  palPM <- colorNumeric(palette = "RdYlGn", domain = dataMapa$totalPM, reverse = TRUE)
+  palNO <- colorNumeric(palette = "RdYlGn", domain = dataMapa$totalNO, reverse = TRUE)
+    
+    output$mapa <- renderLeaflet({
+      
+    if (input$mapSelect == 'PM2.5'){
+
+    leaflet() %>%
+      addTiles() %>%
+      setView(lng = -0.36739, lat = 39.46975, zoom = 13) %>%
+      addCircleMarkers(
+        data = data_filtered(),
+        lng = ~lng,
+        lat = ~lat,
+        label = ~label,
+        radius = 20,
+        color = "black",
+        fillColor = ~palPM(totalPM),
+        fillOpacity = 0.7, 
+        weight = 1,
+        popup = ~paste("PM2.5:", totalPM)
+      )
+} else {
+    leaflet() %>%
+      addTiles() %>%
+      setView(lng = -0.36739, lat = 39.46975, zoom = 13) %>%
+      addCircleMarkers(
+        data = data_filtered(),
+        lng = ~lng,
+        lat = ~lat,
+        label = ~label,
+        radius = 20,
+        color = "black",
+        fillColor = ~palNO(totalNO),
+        fillOpacity = 0.7,
+        weight = 1,
+        popup = ~paste("NO:", totalNO) )
+}
+      
+  })
+    
+
+ 
+     
 }
 
 
