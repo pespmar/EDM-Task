@@ -1,0 +1,109 @@
+---
+title: "Model Testing"
+author: "Pablo, Juan, Alejandro"
+date: "2024-06-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r}
+load('Data.RData')
+library('dplyr')
+set.seed(123)
+COMPLETE= AllStations
+
+COMPLETE$mes <- substr(COMPLETE$FECHA, 6, 7)
+COMPLETE$dia <- substr(COMPLETE$FECHA, 9, 10)
+
+COMPLETE$mes <- as.numeric(gsub("^0", "", COMPLETE$mes))
+COMPLETE$dia <- as.numeric(gsub("^0", "", COMPLETE$dia))
+
+COMPLETE$mes = as.factor(COMPLETE$mes)
+COMPLETE$dia = as.factor(COMPLETE$dia)
+
+COMPLETE <- COMPLETE %>% filter(!is.na(PM2.5))
+
+COMPLETE$categoria <- cut(COMPLETE$PM2.5, 
+                    breaks = c(-Inf, 10, 25, 40, 70, Inf), 
+                    labels = c("muy bajo", 'bajo',  "medio", "alto", "muy alto"), 
+                    right = FALSE)
+
+COMPLETE$source = as.factor(COMPLETE$source)
+COMPLETE$HORA = as.factor(COMPLETE$HORA)
+
+otros <- COMPLETE[COMPLETE$mes != '03', ]
+marzo <- COMPLETE[COMPLETE$mes == '03', ]
+
+
+
+```
+
+```{r}
+y= lm(PM2.5 ~ HORA + source + mes + dia, COMPLETE)
+
+summary(y)
+
+saveRDS(y, file = "modelo.rds")
+```
+
+
+```{r}
+library(nnet)
+library(randomForest)
+
+x= randomForest(PM2.5 ~ HORA + source + mes + dia, COMPLETE, size=1)
+
+
+summary(x)
+
+```
+
+```{r}
+library(NeuralNetTools)
+library(rpart.plot)
+plotnet(x)
+```
+```{r}
+garson(x)
+```
+
+```{r}
+olden(x)
+```
+
+```{r}
+library(caret)
+library(ggplot2)
+
+predicciones <- predict(x, COMPLETE)
+
+```
+
+
+
+```{r}
+predecir <- function(source, mes, dia, HORA) {
+  # Crear un dataframe con las entradas del usuario
+  nueva_data <- data.frame(
+    source = source,
+    mes = mes,
+    dia = dia,
+    HORA = HORA
+  )
+  
+  # Realizar la predicción
+  prediccion <- predict(x, nueva_data)
+  
+  return(prediccion)
+}
+
+
+predecir('AvFrancia', '1', '1', '1')
+```
+
