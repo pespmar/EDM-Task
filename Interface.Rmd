@@ -78,7 +78,6 @@ ui <- dashboardPage(
 
       tabItem(tabName = "exploratory",
               h1("Data Exploratory Analysis"),
-              hr(),
               p('In this section you can see different distributions of our data
               and play with them'),
               h3('Scatter Plots'),
@@ -87,12 +86,15 @@ ui <- dashboardPage(
               selectInput("variable2", "Select the second variable:",
               choices = variables),
               plotlyOutput("scatterPlot"),
+                p('Some variables, as they are similar chemical compounds, are high
+                  correlated with each other'),
               hr(),
               hr(),
               h1('Analysis per Station'),
               selectInput("select", "Select one Station:", choices = opciones),
               h3('Hour analysis'),
               uiOutput("plot"),
+              p('In general terms, there is an increase in air particles at 8 and 9 oclock, and at 20 and 21 oclock. This may be due to increased transportation coinciding with work hours.'),
               h3('Dealing with missing Data'),
               p('We have some missing data from every station. To deal with it, we
                 prerent some different approaches'),
@@ -103,6 +105,8 @@ ui <- dashboardPage(
               selectInput("missingdata", "Select the missing data method:",
               choices = missingdatamethods),
               plotlyOutput("temporalPlotNA"),
+              p('Using the data as a temporal data, interpolation technique seems to
+              have better results')
               
       ),
       
