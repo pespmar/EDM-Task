@@ -1,8 +1,10 @@
 ---
-title: "Interface"
-author: "Pablo, Juan, Alejandro"
+title: "Final Project EDM"
+author: "Pablo Espinosa Martínez, Juan Francisco Pallardó Latorre, Alejandro Hidalgo Raga"
 output: html_document
 ---
+
+Remember to visit our GitHub to get more context https://github.com/pespmar/EDM-Task
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -17,25 +19,20 @@ library(dplyr)
 
 
 
-```{r}
+```{r  , include=FALSE}
 load('Data.RData')
 ```
 
 
 
-# Pre-Rendered Graphs
-
-Can be seen with more detail in our GitHub - ExploratoryAnalysis
 
 
-```{r}
+```{r, include=FALSE}
 load('PreRenderedGraphs.RData')
 ```
 
 
-
-## Options from selection parts
-```{r}
+```{r, include=FALSE}
 opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
              , "Puerto", "AllStations")
@@ -55,9 +52,8 @@ variablesMapa = c("PM2.5" , "NO")
 ```
 
 
-## Slice of All Stations
 
-```{r}
+```{r, include=FALSE}
 
 set.seed(123)
 COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
@@ -66,7 +62,7 @@ COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
 
 
 
-```{r}
+```{r, include=FALSE}
 dataMapa = AllStations %>% group_by(HORA, source)%>%
   summarise(totalPM = mean(PM2.5, na.rm = TRUE) , totalNO = mean(NO, na.rm = TRUE))
 
@@ -79,9 +75,9 @@ dataMapa$label = rep(c("AvenidaFrancia", "Centre","LlicAnticTuria",  "MolidelSol
 
 
 ```
-## MODEL
 
-```{r}
+
+```{r, include=FALSE}
 modelo <- readRDS("modelo.rds")
 
 predecir <- function(source, mes, dia, HORA) {
@@ -107,9 +103,9 @@ arboles <- AllStations %>%
 
 ```
 
-# UI
 
-```{r}
+
+```{r, include=FALSE}
 ui <- dashboardPage(
   dashboardHeader(title = "Air Pollution"),
   dashboardSidebar(
@@ -170,7 +166,7 @@ have better results')),
         sliderInput("month", "Select a month", min = 1, max = 12, value = 0),
         sliderInput("day", "Select a day", min = 1, max = 31, value = 0),
         sliderInput("hour", "Select the hour of the day", min = 0, max = 23, value = 0),
-        actionButton("predict", "Predecir"),
+        actionButton("predict", "Predict"),
         textOutput('prediction'),
         p('In the graphics it is shown the average speed and the number of trees around          the station selected in comparison to the others. These factors could affect air         pollution ')
       ),
@@ -204,12 +200,7 @@ have better results')),
 
 ```
 
-
-
-# Server
-
-
-```{r}
+```{r, include=FALSE}
 server <- function(input, output, session) {
   
   
@@ -380,9 +371,6 @@ plot_selected
 
 
 ```
-
-
-# Run
 
 
 ```{r}
