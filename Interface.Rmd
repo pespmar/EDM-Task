@@ -54,6 +54,7 @@ missingdatamethods = c('None' , 'Mean' , 'Interpolation')
 
 set.seed(123)
 
+AllStations = COMPLETE
 COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
 ```
 
@@ -87,8 +88,8 @@ ui <- dashboardPage(
               choices = variables),
               plotlyOutput("scatterPlot"),
               hr(),
-              h1('Analysis per Station'),
               hr(),
+              h1('Analysis per Station'),
               selectInput("select", "Select one Station:", choices = opciones),
               h3('Hour analysis'),
               uiOutput("plot"),
@@ -204,9 +205,6 @@ plot_selected
 
   
   
-  
-  
-  
   output$mapa <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
@@ -241,6 +239,11 @@ plot_selected
         color = "red",
       )
   })
+  
+  
+  
+  
+  
 }
 
 

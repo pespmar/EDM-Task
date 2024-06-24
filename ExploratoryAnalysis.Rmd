@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(plotly)
 library(dplyr)
+library(zoo)
 ```
 
 
@@ -23,6 +24,9 @@ load('Data.RData')
 
 
 ```{r}
+
+AllStations = COMPLETE
+
 opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
              , "Puerto" , "AllStations")
@@ -69,8 +73,8 @@ data_imputados$Media = media_total
   
   
 plot <- plot_ly(data = datos_agrupados, x = ~FECHA, y = ~total, name = 'Original Values') %>% add_lines() %>%
-  layout(showlegend = TRUE, title = "Temporal Graph",
-         xaxis = list(title = "Date"), yaxis = list(title = "PM2.5")) 
+  layout(showlegend = TRUE, title = paste("2023 Temporal Graph of station", opcion),
+         xaxis = list(title = "Date of 2023"), yaxis = list(title = "PM2.5")) 
 
 
 graficosPMporDia[[opcion]] = plot
@@ -80,14 +84,14 @@ if (nrow(data_imputados) > 0 ){
 plot2 <- plot %>% add_trace(data = data_imputados, x = ~FECHA, y = ~Interpolation, 
                            type = 'scatter', mode = 'markers',
                            marker = list(color = 'red', size = 5),
-                           name = 'Interpolation')
+                           name = 'Interpolation Imputation')
 
 
 
 plot3 = plot %>% add_trace(data = data_imputados, x = ~FECHA, y = ~Media, 
                            type = 'scatter', mode = 'markers',
                            marker = list(color = 'green', size = 5),
-                           name = 'Mean')
+                           name = 'Mean Imputation')
 
 }
 
@@ -132,8 +136,8 @@ for (opcion in opciones){
   
   
 plot <- plot_ly(datos_limpios, x = ~HORA, y = ~total, type = 'scatter', mode = 'lines', line = list(color = 'blue')) %>%
-  layout(title = 'Temporal Graph grouped by hour of the day',
-         xaxis = list(title = 'Hour' , range = c(0,24)),
+  layout(title = paste('Temporal Graph of station', opcion,'grouped by hour of the day'),
+         xaxis = list(title = 'Hour of the day' , range = c(0,24)),
          yaxis = list(title = 'PM2.5' , range = c(0, 15)),
          showlegend = FALSE)
   
