@@ -53,9 +53,14 @@ missingdatamethods = c('None' , 'Mean' , 'Interpolation')
 ```{r}
 
 set.seed(123)
-
-AllStations = COMPLETE
 COMPLETESLICE = na.omit(AllStations) %>% sample_n(size = 1000)
+```
+
+
+
+
+```{r}
+
 ```
 
 
@@ -115,10 +120,14 @@ ui <- dashboardPage(
               verbatimTextOutput("model_summary")
       ),
       
-      tabItem(tabName = "map",
-              h1("Pollution Map"),
-              leafletOutput("mapa")
-      )
+      
+  tabItem(tabName = "map",
+          h1("Pollution Map"),
+          leafletOutput("mapa"),
+          sliderInput("hora", "Selecciona la hora del día", min = 0, max = 23, value = 0, animate = animationOptions(interval = 1000))
+  )
+  
+  
     )
   )
 )

@@ -25,7 +25,6 @@ load('Data.RData')
 
 ```{r}
 
-AllStations = COMPLETE
 
 opciones = c("AvenidaFrancia", "Centre", "MoliDelSol",
              "PistaDeSilla", "UPV", "Olivereta"
@@ -135,7 +134,7 @@ for (opcion in opciones){
   summarise(total = mean(PM2.5))
   
   
-plot <- plot_ly(datos_limpios, x = ~HORA, y = ~total, type = 'scatter', mode = 'lines', line = list(color = 'blue')) %>%
+plot <- plot_ly(datos_limpios, x = ~HORA, y = ~total, type = 'scatter', mode = 'lines', line = list(color = 'blue') , text = ~paste('Mean of PM2.5 at' , HORA, ':', total) , hoverinfo = text) %>%
   layout(title = paste('Temporal Graph of station', opcion,'grouped by hour of the day'),
          xaxis = list(title = 'Hour of the day' , range = c(0,24)),
          yaxis = list(title = 'PM2.5' , range = c(0, 15)),
@@ -161,6 +160,17 @@ graficosPMporHora$AllStations
 COMPLETES = AllStations %>% slice(1:1000)
 plot_ly(COMPLETES , x = ~CO, y = ~NO , type = 'scatter', mode = 'markers')
 ```
+
+
+
+```{r}
+b = AllStations %>% group_by(HORA, source)%>%
+  summarise(total = mean(PM2.5, na.rm = TRUE))
+```
+
+
+
+
 
 
 
